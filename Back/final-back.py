@@ -49,7 +49,28 @@ def get_Tareas():
     result = Tareas_schema.dump(all_Tareas)
     return jsonify(result)
 
+@app.route('/tarea/<id>', methods=['GET'])
+def get_Tarea(id):
+    tarea = Tarea.query.get(id)
+    return Tarea_schema.jsonify(tarea)
 
+@app.route('/tarea/<id>', methods=['DELETE'])
+def delete_Tarea(id):
+    tarea = Tarea.query.get(id)
+    db.session.delete(tarea)
+    db.session.commit()
+    return jsonify({'mensaje': 'Tarea eliminada'})
+
+@app.route('/tarea/<id>', methods=['PUT'])
+def update_task(id):
+    tarea = Tarea.query.get(id)
+    if not tarea:
+        return jsonify({'mensaje': 'Tarea no encontrada'}), 404
+    tarea.name = request.json.get('name', tarea.name)
+    tarea.descripcion = request.json.get('descripcion', tarea.descripcion)
+    tarea.fecha = request.json.get('fecha', tarea.fecha)
+    db.session.commit()
+    return Tarea_schema.jsonify(tarea)
 
 
 if __name__ == '__main__':
